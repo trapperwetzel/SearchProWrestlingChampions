@@ -27,50 +27,48 @@ function App() {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlContent, "text/html");
 
-            const table = doc.querySelector("table.wikitable.sortable");
-// <table class="mw-datatable wikitable sortable sticky-header-multi jquery-tablesorter"
+            const tables = doc.querySelectorAll("table.wikitable.sortable");
+            const table = tables[2]; // Confirmed target
+
             if (!table) {
-                console.warn("❌ Table not found.");
+                console.warn("❌ Target table not found.");
                 return;
             }
 
             const rows = table.querySelectorAll("tbody tr");
             const result = [];
 
-            for (const row of rows) {
-                const cells = row.querySelectorAll("td, th");
+            rows.forEach((row, index) => {
+                if (index < 2) return; // Skip first two rows
 
-                // Some rows (like headers or federation rows) won't have enough cells
-                if (cells.length < 9) continue;
-
-                // Extract relevant cell text
+                const cells = row.querySelectorAll("th, td");
                 const values = Array.from(cells).map((cell) =>
-                    cell.textContent.trim().replace(/\[\d+\]/g, '') // Remove reference numbers like [1]
+                    cell.textContent.trim().replace(/\[\d+\]/g, '')
                 );
 
                 const item = {
-                    no: values[0],
+                    rank: parseInt(values[0]),
                     champion: values[1],
-                    date: values[2],
-                    event: values[3],
-                    location: values[4],
-                    reign: values[5],
-                    days: values[6],
-                    daysRecognized: values[7],
-                    notes: values[8]
+                    reigns: values[2],
+                    daysActual: values[3],
                 };
 
                 result.push(item);
-            }
+            });
 
-            console.log(`✅ Parsed ${result.length} WWE champion entries`);
-            console.log("🔍 First 5 entries:");
-            console.table(result.slice(0, 5));
+            result.sort((a, b) => a.rank - b.rank);
+            console.log(typeof result[0].rank);
+            console.log(` Parsed ${result.length} entries from combined reigns table`);
+            console.table(result);
+
         })
         .catch((err) => {
-            console.error("⚠️ Error fetching/parsing Wikipedia:", err);
+            console.error(" Error fetching/parsing Wikipedia:", err);
         });
 }, []);
+
+
+
 
 
     React.useEffect(() => {
