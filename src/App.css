@@ -2,13 +2,15 @@
 
 
 th {
-    text-align: left;
-    font-size: x-large;
+    text-align: center;
+    font-size: large;
+    
 }
 
 .wrestlertable { 
     border-block: solid 1px black;
     background-color: beige;
+    text-align: center;
 }
 
 input {

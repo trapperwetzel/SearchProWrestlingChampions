@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import useWWEChampions from './useWWEChampions'; 
+
 
 
 // This displays the data for the table, showing the wrestler's name and championships won.
@@ -12,9 +12,6 @@ export const WrestlerRows = ({ wrestler, onSelect }) => (
         .join(', ')}
     </td>
     <td>{wrestler.totaldaysHeld}</td>
-    <td>
-      <button onClick={() => onSelect(wrestler)}>More Info</button>
-    </td>
   </tr>
 );
 
