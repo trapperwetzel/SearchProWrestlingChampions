@@ -1,5 +1,7 @@
 
-
+body {
+    background-color: whitesmoke
+}
 
 th {
     text-align: center;
@@ -8,13 +10,15 @@ th {
 }
 
 .wrestlertable { 
-    border-block: solid 1px black;
+    
     background-color: beige;
     text-align: center;
+    border: solid 3px black;
 }
 
 input {
     width: 99%;
     font-size: x-large;
     padding: 0.2rem;
+    background-color: white;
 }

@@ -7,6 +7,7 @@ import useWWEChampions from './components/useWWEChampions.jsx';
 
 const Title = styled.h1`
     text-align: center;
+    
 `;
 
 const TwoColumnLayout = styled.div`
