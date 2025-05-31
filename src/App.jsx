@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import styled from '@emotion/styled';
-import { WrestlerMoreInfo, WrestlerRows, } from './WrestlerRows';
-import type { Wrestler } from './WrestlerRows';
+import { WrestlerRows, WrestlerMoreInfo } from './components/WrestlerRows.jsx';
+import fetchWWEChampions from './components/APICall.jsx';
+import useWWEChampions from './components/useWWEChampions.jsx';
 
 const Title = styled.h1`
     text-align: center;
@@ -15,11 +16,15 @@ const TwoColumnLayout = styled.div`
 `;
 
 function App() {
-
+    const {data:wrestler, loading,error} = useWWEChampions();
     const [filter, filterSet] = React.useState("");
-    const [wrestler, wrestlerSet] = React.useState<Wrestler[]>([]);
-    const [selectedItem, selectedItemSet] = React.useState<Wrestler | null>(null);
-    React.useEffect(() => {
+    const [selectedItem, selectedItemSet] = React.useState(null);
+   
+    
+    
+
+    
+React.useEffect(() => {
     fetch("https://en.wikipedia.org/w/api.php?action=parse&page=List_of_WWE_Champions&format=json&origin=*")
         .then((resp) => resp.json())
         .then((data) => {
@@ -27,55 +32,54 @@ function App() {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlContent, "text/html");
 
-            const tables = doc.querySelectorAll("table.wikitable.sortable");
-            const table = tables[2]; // Confirmed target
-
+            const table = doc.querySelector("table.wikitable.sortable");
+            //<table class="wikitable sortable jquery-tablesorter"
             if (!table) {
-                console.warn("❌ Target table not found.");
+                console.warn("❌ Table not found.");
                 return;
             }
 
             const rows = table.querySelectorAll("tbody tr");
             const result = [];
 
-            rows.forEach((row, index) => {
-                if (index < 2) return; // Skip first two rows
+            for (const row of rows) {
+                const cells = row.querySelectorAll("td, th");
 
-                const cells = row.querySelectorAll("th, td");
+                // Some rows (like headers or federation rows) won't have enough cells
+                if (cells.length < 9) continue;
+
+                // Extract relevant cell text
                 const values = Array.from(cells).map((cell) =>
-                    cell.textContent.trim().replace(/\[\d+\]/g, '')
+                    cell.textContent.trim().replace(/\[\d+\]/g, '') // Remove reference numbers like [1]
                 );
 
                 const item = {
-                    rank: parseInt(values[0]),
+                    no: values[0],
                     champion: values[1],
-                    reigns: values[2],
-                    daysActual: values[3],
+                    date: values[2],
+                    event: values[3],
+                    location: values[4],
+                    reign: values[5],
+                    days: values[6],
+                    daysRecognized: values[7],
+                    notes: values[8]
                 };
 
                 result.push(item);
-            });
+            }
 
-            result.sort((a, b) => a.rank - b.rank);
-            console.log(typeof result[0].rank);
-            console.log(` Parsed ${result.length} entries from combined reigns table`);
-            console.table(result);
-
+            
+            console.log("Log Table")
+            console.table(result)
         })
         .catch((err) => {
-            console.error(" Error fetching/parsing Wikipedia:", err);
+            console.error("Error fetching/parsing Wikipedia:", err);
         });
-}, []);
+}, []); 
 
 
 
-
-
-    React.useEffect(() => {
-        fetch("http://localhost:5173/wrestlers.json")
-            .then((resp) => resp.json())
-            .then((data) => wrestlerSet(data));
-    },[]);
+    
 
     return (
         <div
@@ -97,15 +101,17 @@ function App() {
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Championships</th>
+                                <th>Championship</th>
+                                <th>Total Days Held</th>
                             </tr>
                         </thead>
                         <tbody>
                             {wrestler
                                 .filter((wrestler) => wrestler.name.toLowerCase().includes(filter.toLowerCase()))
                                 .map((wrestler) => (
-                                    <WrestlerRows wrestler={wrestler}
-                                    key={wrestler.id}
+                                    <WrestlerRows
+                                    key={wrestler.id} 
+                                    wrestler={wrestler}
                                     onSelect={(wrestler) => selectedItemSet(wrestler)} />
                                 ))}
                         </tbody>
