@@ -39,7 +39,8 @@ export default async function fetchWWEChampions() {
       if (isNaN(rank) || values.length < 4 || !values[1]) return;
 
       transformedData.push({
-        id: values[0],
+        id: rank,
+        rank,
         name: values[1],
         championships: [
             {
@@ -65,9 +66,41 @@ export default async function fetchWWEChampions() {
   }
 }
 
+// make function to sort the data based on a user button click 
+// Sort name alphabethical
+// sort by amount of reigns
+// sort by total days held 
+// ALL OF THESE NEED TO BE ABLE TO GO BACK AND FORTH... 
+/*
+const sortDataAZ = () => {
+    
+    const data = fetchWWEChampions();
 
+    data.sort((a, b) => a.name - b.name);
 
+    return data;
+}
 
+const sortDataReigns = () => {
+    
+    const data = fetchWWEChampions();
+
+    data.sort((a, b) => a.times - b.times);
+
+    return data;
+}
+
+const sortDataDaysHeld = () => {
+    
+    
+    const data = fetchWWEChampions();
+
+    data.sort((a, b) => a.sortDataDaysHeld - b.sortDataDaysHeld);
+
+    return data;
+}
+
+*/ 
 /* 
 CALL FOR MORE INFO 
 React.useEffect(() => {

@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { WrestlerRows, WrestlerMoreInfo } from './components/WrestlerRows.jsx';
 import fetchWWEChampions from './components/APICall.jsx';
 import useWWEChampions from './components/useWWEChampions.jsx';
-
+import { FilterButton } from './components/FilterButton.jsx';
 const Title = styled.h1`
     text-align: center;
     font-color: white;
@@ -17,9 +17,16 @@ const TwoColumnLayout = styled.div`
 `;
 
 function App() {
-    const {data:wrestler} = useWWEChampions();
+    const {data:wrestlerData} = useWWEChampions();
     const [filter, filterSet] = React.useState("");
     const [selectedItem, selectedItemSet] = React.useState(null);
+    const [filteredData, setFilterData] = React.useState(wrestlerData);
+
+
+    React.useEffect(() => {
+        setFilterData(wrestlerData); 
+    }, [wrestlerData]);
+
 
     return (
         <div
@@ -30,6 +37,9 @@ function App() {
             }}
         >
             <Title>Pro Wrestler Search</Title>
+            <FilterButton data={filteredData} setData={setFilterData} originalData = {wrestlerData} />
+
+            
 
             <div>
                 <div>
@@ -46,12 +56,12 @@ function App() {
                             </tr>
                         </thead>
                         <tbody>
-                            {wrestler
-                                .filter((wrestler) => wrestler.name.toLowerCase().includes(filter.toLowerCase()))
-                                .map((wrestler) => (
+                            {filteredData
+                                .filter((wrestlerData) => wrestlerData.name.toLowerCase().includes(filter.toLowerCase()))
+                                .map((wrestlerData) => (
                                     <WrestlerRows
-                                    key={wrestler.id} 
-                                    wrestler={wrestler}
+                                    key={wrestlerData.id} 
+                                    wrestler={wrestlerData}
                                     />
                                 ))}
                         </tbody>
