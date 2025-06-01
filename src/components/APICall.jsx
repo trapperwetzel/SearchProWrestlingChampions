@@ -23,7 +23,8 @@ export default async function fetchWWEChampions() {
     }
 
     const rows = table.querySelectorAll("tbody tr");
-    const result = [];
+    // initalize array for the data from wiki 
+    const transformedData = [];
 
     rows.forEach((row, index) => {
       if (index < 2) return;
@@ -37,30 +38,25 @@ export default async function fetchWWEChampions() {
       const rank = parseInt(rawRank, 10);
       if (isNaN(rank) || values.length < 4 || !values[1]) return;
 
-      result.push({
-        rank,
-        champion: values[1],
-        reigns: values[2],
-        daysActual: values[3],
+      transformedData.push({
+        id: values[0],
+        name: values[1],
+        championships: [
+            {
+                title: "WWE Championship",
+                times: values[2],
+                
+            }
+        ],
+        totaldaysHeld:values[3]
       });
     });
 
-    result.sort((a, b) => a.rank - b.rank);
+    transformedData.sort((a, b) => a.rank - b.rank);
 
     console.log("Table results:");
-    console.table(result); 
-    const transformedData = result.map((item, index) => ({
-    id: index,
-    name: item.champion,
-    championships: [
-        {
-        title: "WWE Championship",
-        times: parseInt(item.reigns),
-        },
-    ],
-    totaldaysHeld:item.daysActual,
-    }));
-
+    console.table(transformedData); 
+    
     return transformedData;
 
   } catch (err) {
