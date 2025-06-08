@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 
 // This displays the data for the table, showing the wrestler's name and championships won.
-export const WrestlerRows = ({ wrestler, onSelect }) => (
+export const WrestlerRows = ({ wrestler}) => (
   <tr>
     <td>{wrestler.name}</td>
     <td>
