@@ -81,17 +81,60 @@ export const WrestlerTable = () => {
         },2000);
         return () => clearTimeout(timeout);
     },[]);
+    
+
+    
+    // isNumberSearch is used to check if the search is for a number or not.
+    // REGEX: /^\d+$/
+    // Explanation:
+    /////////////////////// 
+    // ^ Asserts position at start of string
+    // \d Matches a digit - Equivalent to [0-9]
+    // $ Asserts position at the end of string
+    // Combinding ^ and $ makes it so we can check for anything that isn't a number between 0-9
+    ///////////////////////
+
+    const rawSearch = searchTerm.replace(/,/g,'');   //Removes commas  example: "4000"
+
+    const isNumberSearch = /^\d+$/.test(rawSearch);  // Test if the rawSearch matches the regex
+
 
     const filteredData = data.filter(wrestler => {
         const term = searchTerm.toLowerCase();
 
-        const name = wrestler.name.toLowerCase().includes(term);
+        const nameSearch = wrestler.name.toLowerCase().includes(term);
 
-        const reigns = wrestler.totalReigns.toString().includes(term);
+        let daysSearch = false;
+        if(isNumberSearch) {
+            // This is used to make using the search feel better.
+            // Gives a nice window for searches by number.
+            // will refactor in switch statement soon 
+            const numberSearched = parseInt(rawSearch,10);
 
-        const days = wrestler.totalDaysHeld.toString().includes(term);
+            if(rawSearch.length === 1){
+                daysSearch = wrestler.totalDaysHeld.toString().includes(rawSearch);
+            } else {
+                let window;
+                if(rawSearch.length === 2){
+                    window = 10;
+                } 
+                else if (rawSearch.length === 3){
+                    window = 100;
+                } 
+                else if (rawSearch.length === 4) {
+                    window = 1000
+                    
+                }
+                daysSearch = Math.abs(wrestler.totalDaysHeld - numberSearched) <= window;
+            }
 
-        return name || days || reigns
+            
+            
+        }
+        
+         
+
+        return nameSearch || daysSearch
     })
     
     return (
@@ -110,13 +153,13 @@ export const WrestlerTable = () => {
                 data={filteredData}
                 progressPending={pending}
                 progressComponent={<CustomLoader />}
-                pagination
-                paginationPerPage={20}
+                //pagination
+                //paginationPerPage={20}
                 highlightOnHover
                 dense
                 striped
-                
-                //title = "WWE Champions"
+                fixedHeader
+                title = "WWE Champions"
             />
 
 
